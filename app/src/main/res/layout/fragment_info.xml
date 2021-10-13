@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="#FF4C05"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBar"
+        android:layout_width="match_parent"
+        android:layout_height="?android:actionBarSize"
+        android:background="#FF4C05"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/onBackPress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="8dp"
+                android:src="@drawable/ic_back" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="About task"
+                android:textColor="#fff"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="8dp"
+                android:src="@drawable/ic_back"
+                android:visibility="invisible" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="24dp"
+        android:id="@+id/constraint"
+        android:background="@drawable/info_background"
+        android:paddingTop="24dp"
+        app:layout_constraintBottom_toTopOf="@id/view"
+        app:layout_constraintTop_toBottomOf="@id/appBar"
+        tools:layout_editor_absoluteX="0dp">
+
+        <ImageView
+            android:id="@+id/imageTask"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:padding="8dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:src="@drawable/ic_task"
+            app:layout_constraintBottom_toBottomOf="@id/textTaskName"
+            app:layout_constraintTop_toTopOf="@id/textTaskName"/>
+
+        <TextView
+            android:id="@+id/textTaskName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:textStyle="bold"
+            android:justificationMode="inter_word"
+            android:textColor="@color/black"
+            android:text="Task Example"
+            android:textSize="20sp"
+            app:layout_constraintLeft_toRightOf="@id/imageTask"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/imageToDo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:src="@drawable/ic_to_do"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/textToDo"
+            app:layout_constraintTop_toTopOf="@id/textToDo"/>
+
+        <TextView
+            android:id="@+id/textToDo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:textSize="18sp"
+            android:justificationMode="inter_word"
+            android:textColor="#433B3B"
+            app:layout_constraintLeft_toRightOf="@id/imageTask"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textTaskName"
+            tools:text="To Do Example" />
+
+        <ImageView
+            android:id="@+id/imageProcess"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:src="@drawable/ic_info"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="@id/textProcessInfo"
+            app:layout_constraintBottom_toBottomOf="@id/textProcessInfo"/>
+
+        <TextView
+            android:id="@+id/textProcessInfo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="Task Example"
+            android:textSize="18sp"
+            android:justificationMode="inter_word"
+            android:textColor="#433B3B"
+            app:layout_constraintLeft_toRightOf="@id/imageTask"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textToDo" />
+
+        <ImageView
+            android:id="@+id/imageTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:src="@drawable/ic_timer"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/textDeadlineTime"
+            app:layout_constraintTop_toTopOf="@id/textDeadlineTime"/>
+
+        <TextView
+            android:id="@+id/textDeadlineTime"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="Task Example"
+            android:textSize="18sp"
+            android:textColor="#433B3B"
+            app:layout_constraintLeft_toRightOf="@id/imageTask"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textProcessInfo" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+<View
+    android:id="@+id/view"
+    android:layout_width="match_parent"
+    android:layout_height="24dp"
+    android:background="@color/black"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/constraint"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

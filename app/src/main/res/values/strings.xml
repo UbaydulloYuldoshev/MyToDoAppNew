@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">MyToDoApp</string>
+
+    <string name="channel_name">MyChannel</string>
+    <string name="channel_description">MyChannelDescription</string>
+</resources>

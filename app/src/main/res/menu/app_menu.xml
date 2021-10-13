@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/about"
+        android:icon="@drawable/ic_people"
+        android:title="Appointments" />
+
+    <item
+        android:id="@+id/calendar"
+        android:icon="@drawable/ic_baseline_contact_phone_24"
+        android:title="Contacts" />
+
+    <item
+        android:id="@+id/share"
+        android:icon="@drawable/ic_share"
+        android:title="Share" />
+
+</menu>

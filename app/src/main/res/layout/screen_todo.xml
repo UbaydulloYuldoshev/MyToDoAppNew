@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/addNoteTitle"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Add Title"
+            android:maxLines="1"
+            android:minLines="1"
+            android:singleLine="true"
+            android:textColor="@color/black"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/addNoteDescription"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="16dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/addNoteAlarmTime"
+        app:layout_constraintTop_toBottomOf="@id/addNoteTitle">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="Add notes"
+            android:textColor="#99000000"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/addNoteTitle" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <!--        <DatePicker-->
+    <!--            android:layout_width="200dp"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:hint="Select time"-->
+    <!--            android:id="@+id/addNoteAlarmTime"-->
+    <!--            android:textSize="14sp"-->
+    <!--            android:textColor="#99000000"-->
+    <!--            android:maxLines="3"-->
+    <!--            android:layout_margin="16dp"-->
+    <!--            android:ellipsize="end"-->
+    <!--            android:textStyle="bold"-->
+    <!--            app:layout_constraintTop_toBottomOf="@id/addNoteDescription"-->
+    <!--            app:layout_constraintLeft_toLeftOf="parent"-->
+    <!--            />-->
+    <TextView
+        android:id="@+id/addNoteAlarmTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:hint="Select time"
+        android:maxLines="1"
+        android:textColor="#99000000"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@id/addNoteBtn"
+        app:layout_constraintLeft_toLeftOf="parent"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/addNoteBtn"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:layout_margin="16dp"
+        android:background="@drawable/add_btn"
+        android:text="ADD"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/cancelNoteBtn"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:layout_margin="16dp"
+        android:background="@drawable/cancel_btn"
+        android:text="CANCEL"
+        android:textColor="#65EF9C"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>
