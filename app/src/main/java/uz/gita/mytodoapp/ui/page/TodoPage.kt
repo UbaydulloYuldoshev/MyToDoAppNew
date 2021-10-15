@@ -1,5 +1,12 @@
 package uz.gita.mytodoapp.ui.page
 
+import android.app.AlarmManager
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -10,7 +17,9 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import by.kirich1409.viewbindingdelegate.viewBinding
 import pl.droidsonroids.gif.GifDrawable
+import uz.gita.mytodoapp.AlarmReceiver
 import uz.gita.mytodoapp.R
 import uz.gita.mytodoapp.data.AppDatabase
 import uz.gita.mytodoapp.data.entity.TaskEntity
@@ -21,16 +30,8 @@ import uz.gita.mytodoapp.ui.dialog.EditTaskDialog
 import uz.gita.mytodoapp.ui.dialog.EventDialog
 
 class TodoPage : Fragment(R.layout.page_to_do) {
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        _viewBinding = PageToDoBinding.inflate(inflater, container, false)
-        return viewBinding.root
-    }
-    private var _viewBinding: PageToDoBinding?=null
-    private val viewBinding get() =_viewBinding!!
+
+    private val viewBinding by viewBinding(PageToDoBinding::bind)
     private val data = ArrayList<TaskEntity>()
     private val taskDao = AppDatabase.getDatabase().getTaskDao()
     private val adapter by lazy { TaskAdapter(data) }
@@ -38,6 +39,8 @@ class TodoPage : Fragment(R.layout.page_to_do) {
     private var listenerItem: ((TaskEntity) -> Unit)? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        createNotificationChannel()
+
         val rv: RecyclerView = view.findViewById(R.id.todoList)
         val gifFromResource = GifDrawable(resources,R.drawable.todo)
         gifFromResource.start()
@@ -64,13 +67,14 @@ class TodoPage : Fragment(R.layout.page_to_do) {
                 adapter.notifyItemRemoved(pos)
             }
             bottomDialog.setEditListener {
-                val editTaskDialog = EditTaskDialog()
+                val editTaskDialog = EditTaskDialog(5)
                 val bundle = Bundle()
                 bundle.putSerializable("data",data[pos])
                 editTaskDialog.arguments = bundle
                 editTaskDialog.setListener {
                     data[pos] = it
                     taskDao.update(data[pos])
+                    setNotification(data[pos],editTaskDialog.currentNotify)
                     adapter.notifyItemChanged(pos)
                 }
                 editTaskDialog.isCancelable = false
@@ -78,29 +82,6 @@ class TodoPage : Fragment(R.layout.page_to_do) {
             }
             bottomDialog.show(childFragmentManager,"event")
         }
-        /***
-        adapter.setListener { pos ->
-        val bottomDialog = EventDialog()
-        bottomDialog.setDeleteListener {
-        database.deleteContact(data[pos].id)
-        data.removeAt(pos)
-        adapter.notifyItemRemoved(pos)
-        }
-        bottomDialog.setEditListener {
-        val editDialog = EditContactDialog()
-        val bundle = Bundle()
-        bundle.putSerializable("data",data[pos])
-        editDialog.arguments = bundle
-        editDialog.setListener {
-        data[pos] = it
-        database.editContact(it)
-        adapter.notifyItemChanged(pos)
-        }
-        editDialog.show(supportFragmentManager,"edit")
-        }
-        bottomDialog.show(supportFragmentManager,"event")
-        }
-         */
 
         val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.Callback() {
             override fun getMovementFlags(
@@ -158,6 +139,30 @@ class TodoPage : Fragment(R.layout.page_to_do) {
     }
     fun setListenerItem(f: (TaskEntity) -> Unit) {
         listenerItem = f
+    }
+    private fun setNotification(entity: TaskEntity, time: Long) {
+
+        val alarmManager = requireActivity().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(requireContext(), AlarmReceiver::class.java)
+
+        intent.putExtra("id", entity.id)
+        intent.putExtra("title", entity.title)
+
+        val pendingIntent = PendingIntent.getBroadcast(requireContext(), 0, intent, 0)
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, time, pendingIntent)
+    }
+
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name: CharSequence = "todoApplicationNotificationChannel"
+            val description = "Channel for Todo App"
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val channel = NotificationChannel("todoChannelId", name, importance)
+            channel.description = description
+            val notificationManager: NotificationManager =
+                requireActivity().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
     }
 
 }

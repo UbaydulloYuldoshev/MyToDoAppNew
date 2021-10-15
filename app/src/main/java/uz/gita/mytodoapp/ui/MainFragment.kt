@@ -87,7 +87,7 @@ class MainFragment : Fragment(R.layout.activity_main_nav) {
         val todoPage = TodoPage()
         val doingPage = DoingPage()
         val donePage = DonePage()
-        val adapter = MainPageAdapter(requireActivity(),
+        val adapter = MainPageAdapter(childFragmentManager,lifecycle,
             todoPage, doingPage, donePage)
         adapter.notifyDataSetChanged()
 
@@ -132,6 +132,7 @@ class MainFragment : Fragment(R.layout.activity_main_nav) {
             bundle.putSerializable("data", it)
             findNavController().navigate(R.id.action_mainFragment_to_infoFragment, bundle)
         }
+
         todoPage.setUpdateDoingPageListener {
             doingPage.loadData()
         }

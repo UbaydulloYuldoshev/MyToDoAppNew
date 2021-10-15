@@ -70,7 +70,6 @@ class AddTaskDialog : DialogFragment(R.layout.dialog_add_task) {
                     calendar.set(Calendar.SECOND, 0)
                     calendar.set(Calendar.MILLISECOND, 0)
 
-
                     viewBinding.addNoteAlarmTime.editText?.setText("$cYear $timeAlarm")
                 }, date.get(Calendar.HOUR), date.get(Calendar.MINUTE), true).show()
             },

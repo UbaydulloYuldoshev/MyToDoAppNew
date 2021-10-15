@@ -1,7 +1,5 @@
 package uz.gita.mytodoapp.ui.dialog
 
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,11 +8,14 @@ import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import uz.gita.mytodoapp.data.entity.ContactEntity
 import uz.gita.mytodoapp.databinding.DialogEditContactBinding
+import java.util.*
 
 class EditContactDialog : DialogFragment() {
     private var listener: ((ContactEntity) -> Unit)? = null
     private var _viewBinding: DialogEditContactBinding? = null
     private val viewBinding get() = _viewBinding!!
+    private lateinit var calendar: Calendar
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -33,6 +34,13 @@ class EditContactDialog : DialogFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+        calendar = Calendar.getInstance()
+        var time = ""
+        var timeAlarm = ""
+        var cYear = ""
+
+        val date = Calendar.getInstance()
         var pos = 0
         arguments?.let {
             val data = it.getSerializable("data") as ContactEntity

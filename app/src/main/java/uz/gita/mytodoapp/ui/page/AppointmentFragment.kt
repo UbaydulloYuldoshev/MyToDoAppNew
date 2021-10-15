@@ -67,7 +67,7 @@ class AppointmentFragment : Fragment(R.layout.fragment_appointment) {
                 if (data.isEmpty())
                     viewBinding.appointment.visibility = View.VISIBLE
                 else viewBinding.appointment.visibility = View.GONE
-                adapter.notifyItemRemoved(pos)
+                adapter.notifyItemRemoved(pos)    
             }
             bottomDialog.setEditListener {
                 val editTaskDialog = EditTaskAppDialog()
@@ -77,6 +77,7 @@ class AppointmentFragment : Fragment(R.layout.fragment_appointment) {
                 editTaskDialog.setListener {
                     data[pos] = it
                     taskDao.update(data[pos])
+                    setNotification(data[pos],editTaskDialog.currentNotify)
                     adapter.notifyItemChanged(pos)
                 }
                 editTaskDialog.isCancelable = false
