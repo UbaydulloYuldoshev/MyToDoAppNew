@@ -11,5 +11,6 @@ data class AppointmentEntity (
     var title:String,
     var place:String,
     var deadlineHour: String,
-    var time:String
+    var time:String,
+    var idItem:String
 ):Serializable

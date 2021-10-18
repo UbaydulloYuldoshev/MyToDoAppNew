@@ -14,5 +14,4 @@
         app:defaultNavHost= "true"
         app:graph ="@navigation/app_nav"/>
 
-
 </FrameLayout>

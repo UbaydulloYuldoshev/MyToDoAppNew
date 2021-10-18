@@ -2,8 +2,6 @@ package uz.gita.mytodoapp.ui.dialog
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,9 +9,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
+import androidx.work.Data
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
+import androidx.work.WorkRequest
+import uz.gita.mytodoapp.WorkManagerToDo
+import uz.gita.mytodoapp.app.App
 import uz.gita.mytodoapp.data.entity.AppointmentEntity
 import uz.gita.mytodoapp.databinding.DialogEditAppTaskBinding
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class EditTaskAppDialog : DialogFragment() {
     private var listener: ((AppointmentEntity) -> Unit)? = null
@@ -21,6 +26,7 @@ class EditTaskAppDialog : DialogFragment() {
     private val viewBinding get() = _viewBinding!!
     private lateinit var calendar: Calendar
     var currentNotify = 0L
+    private lateinit var data : AppointmentEntity
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,7 +56,7 @@ class EditTaskAppDialog : DialogFragment() {
 
         val date = Calendar.getInstance()
         arguments?.let {
-            val data = it.getSerializable("data") as AppointmentEntity
+            data = it.getSerializable("data") as AppointmentEntity
             pos = data.id
             viewBinding.taskTitle.editText?.setText(data.title)
             viewBinding.taskDescription.editText?.setText(data.place)
@@ -58,7 +64,7 @@ class EditTaskAppDialog : DialogFragment() {
         }
         viewBinding.taskSelectedTime.setOnClickListener {
             DatePickerDialog(requireContext(), { _, year, month, day ->
-                cYear = "$year/${month+1}/$day"
+                cYear = "$year/${month + 1}/$day"
                 TimePickerDialog(requireContext(), { _, hour, minute ->
                     time = "$hour : $minute"
                     timeAlarm = "$hour : $minute"
@@ -80,20 +86,54 @@ class EditTaskAppDialog : DialogFragment() {
                 date.get(Calendar.MONTH),
                 date.get(Calendar.DAY_OF_MONTH)).show()
         }
+          cancelRequest(data.idItem)
+            val data = Data.Builder()
+            data.putInt("id", 0)
+            data.putString("title", "${viewBinding.taskTitle.editText?.text}")
+            data.putString("description", "${viewBinding.taskDescription.editText?.text}")
+
+            val uploadWorkerRequest: WorkRequest =
+                OneTimeWorkRequest.Builder(WorkManagerToDo::class.java)
+                    .setInitialDelay((currentNotify - calendar.timeInMillis), TimeUnit.MILLISECONDS)
+                    .setInputData(data.build()).build()
+            WorkManager.getInstance(requireContext()).enqueue(uploadWorkerRequest)
 
         viewBinding.buttonAdd.setOnClickListener {
-            listener?.invoke(AppointmentEntity(pos,
-                viewBinding.taskTitle.editText?.text.toString(),
-                viewBinding.taskDescription.editText?.text.toString(),
-                viewBinding.taskSelectedTime.text.toString(),
-                ""))
-            dismiss()
+                listener?.invoke(AppointmentEntity(
+                    pos,
+                    viewBinding.taskTitle.editText?.text.toString(),
+                    viewBinding.taskDescription.editText?.text.toString(),
+                    viewBinding.taskSelectedTime.text.toString(),
+                    "",
+                    uploadWorkerRequest.id.toString()
+                ))
+                dismiss()
         }
         viewBinding.buttonNo.setOnClickListener {
             dismiss()
         }
     }
 
+    private fun cancelRequest(id: String) {
+        WorkManager.getInstance(App.instance)
+            .cancelWorkById(UUID.fromString(id))
+    }
+
+    //    private fun createRequest(time:Long){
+//        if( time>=0 ){
+//            val data = Data.Builder()
+//            data.putInt("id",0)
+//            data.putString("title","${viewBinding.taskTitle.editText?.text}")
+//            data.putString("title","${viewBinding.taskDescription.editText?.text}")
+//
+//            val uploadWorkerRequest: WorkRequest =
+//                OneTimeWorkRequest.Builder(WorkManagerToDo::class.java)
+//                    .setInitialDelay(time, TimeUnit.MILLISECONDS)
+//                    .setInputData(data.build()).build()
+//            WorkManager.getInstance(requireContext()).enqueue(uploadWorkerRequest)
+//
+//        }
+//    }
     fun setListener(f: (AppointmentEntity) -> Unit) {
         listener = f
     }

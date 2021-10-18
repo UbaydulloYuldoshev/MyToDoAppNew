@@ -21,7 +21,9 @@ import com.google.android.material.tabs.TabLayoutMediator
 import uz.gita.mytodoapp.AlarmReceiver
 import uz.gita.mytodoapp.DepthPageTransformer
 import uz.gita.mytodoapp.R
+import uz.gita.mytodoapp.app.App
 import uz.gita.mytodoapp.data.AppDatabase
+import uz.gita.mytodoapp.data.entity.AppointmentEntity
 import uz.gita.mytodoapp.data.entity.TaskEntity
 import uz.gita.mytodoapp.databinding.ActivityMainNavBinding
 import uz.gita.mytodoapp.ui.adapter.MainPageAdapter
@@ -29,7 +31,6 @@ import uz.gita.mytodoapp.ui.dialog.AddTaskDialog
 import uz.gita.mytodoapp.ui.page.DoingPage
 import uz.gita.mytodoapp.ui.page.DonePage
 import uz.gita.mytodoapp.ui.page.TodoPage
-import java.lang.Exception
 
 class MainFragment : Fragment(R.layout.activity_main_nav) {
     private var _viewBinding: ActivityMainNavBinding? = null
@@ -62,7 +63,8 @@ class MainFragment : Fragment(R.layout.activity_main_nav) {
                         i.type = "text/plain"
                         i.putExtra(Intent.EXTRA_SUBJECT, "Your Subject")
                         var sAux = "\nLet me recommend you this application\n\n"
-                        sAux = """${sAux}https://play.google.com/store/apps/details?id=uz.gita.mytodoapp        
+                        sAux =
+                            """${sAux}https://play.google.com/store/apps/details?id=uz.gita.mytodoapp        
                         """.trimIndent()
                         i.putExtra(Intent.EXTRA_TEXT, sAux)
                         startActivity(Intent.createChooser(i, "choose one"))
@@ -87,7 +89,7 @@ class MainFragment : Fragment(R.layout.activity_main_nav) {
         val todoPage = TodoPage()
         val doingPage = DoingPage()
         val donePage = DonePage()
-        val adapter = MainPageAdapter(childFragmentManager,lifecycle,
+        val adapter = MainPageAdapter(childFragmentManager, lifecycle,
             todoPage, doingPage, donePage)
         adapter.notifyDataSetChanged()
 
@@ -158,15 +160,30 @@ class MainFragment : Fragment(R.layout.activity_main_nav) {
     }
 
     private fun setNotification(entity: TaskEntity, time: Long) {
-
         val alarmManager = requireActivity().getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(requireContext(), AlarmReceiver::class.java)
-
         intent.putExtra("id", entity.id)
         intent.putExtra("title", entity.title)
-
-        val pendingIntent = PendingIntent.getBroadcast(requireContext(), 0, intent, 0)
+        val pendingIntent = PendingIntent.getBroadcast(requireContext(), entity.id, intent, 0)
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, time, pendingIntent)
+    }
+
+
+    //    private fun createRequest(time:Long){
+//        if( time>=0 ){
+//            val data = Data.Builder()
+//            data.putInt("id",0)
+//            data.putString("title",${v})
+//
+//        }
+//    }
+    private fun cancelAlarm(entity: TaskEntity) {
+        val alarmManager = requireActivity().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val myIntent = Intent(App.instance,
+            AlarmReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            App.instance, entity.id, myIntent, 0)
+        alarmManager.cancel(pendingIntent)
     }
 
     private fun createNotificationChannel() {

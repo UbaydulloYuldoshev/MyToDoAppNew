@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,11 +17,15 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.viewModels
+import androidx.work.*
 import uz.gita.mytodoapp.R
+import uz.gita.mytodoapp.WorkManagerToDo
 import uz.gita.mytodoapp.app.App
 import uz.gita.mytodoapp.data.entity.TaskEntity
 import uz.gita.mytodoapp.databinding.DialogAddTaskBinding
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class AddTaskDialog : DialogFragment(R.layout.dialog_add_task) {
     private var listener: ((TaskEntity, Long) -> Unit)? = null
@@ -88,6 +93,7 @@ class AddTaskDialog : DialogFragment(R.layout.dialog_add_task) {
                     time,
                     cYear),
                     calendar.timeInMillis)
+//                createRequest(calendar.timeInMillis)
                 isCancelable = false
                 dismiss()
             } else
@@ -99,7 +105,22 @@ class AddTaskDialog : DialogFragment(R.layout.dialog_add_task) {
             dismiss()
         }
     }
-
+//    private fun createRequest(time:Long){
+//        if( time>=0 ){
+//
+//            val data = Data.Builder()
+//            data.putInt("id",0)
+//            data.putString("title","${viewBinding.addNoteTitle.editText?.text}")
+//            data.putString("title","${viewBinding.addNoteDescription.editText?.text}")
+//
+//            val uploadWorkerRequest: WorkRequest =
+//                OneTimeWorkRequest.Builder(WorkManagerToDo::class.java)
+//                    .setInitialDelay(time, TimeUnit.MILLISECONDS)
+//                    .setInputData(data.build()).build()
+//            WorkManager.getInstance(requireContext()).enqueue(uploadWorkerRequest)
+//
+//        }
+//    }
     fun setDialogListener(f: (TaskEntity, Long) -> Unit) {
         listener = f
     }
