@@ -89,7 +89,6 @@ class EditTaskAppDialog : DialogFragment() {
         }
 
         viewBinding.buttonAdd.setOnClickListener {
-            Log.d("AAAA", data.idItem)
             if (calendar.timeInMillis > Calendar.getInstance().timeInMillis) {
                 cancelRequest(data.idItem)
                 val data = Data.Builder()
@@ -125,21 +124,6 @@ class EditTaskAppDialog : DialogFragment() {
             .cancelWorkById(UUID.fromString(id))
     }
 
-    //    private fun createRequest(time:Long){
-//        if( time>=0 ){
-//            val data = Data.Builder()
-//            data.putInt("id",0)
-//            data.putString("title","${viewBinding.taskTitle.editText?.text}")
-//            data.putString("title","${viewBinding.taskDescription.editText?.text}")
-//
-//            val uploadWorkerRequest: WorkRequest =
-//                OneTimeWorkRequest.Builder(WorkManagerToDo::class.java)
-//                    .setInitialDelay(time, TimeUnit.MILLISECONDS)
-//                    .setInputData(data.build()).build()
-//            WorkManager.getInstance(requireContext()).enqueue(uploadWorkerRequest)
-//
-//        }
-//    }
     fun setListener(f: (AppointmentEntity) -> Unit) {
         listener = f
     }
