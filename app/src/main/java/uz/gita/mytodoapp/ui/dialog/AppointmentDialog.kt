@@ -67,7 +67,7 @@ class AppointmentDialog : DialogFragment(R.layout.dialog_appointment) {
                         calendar2.set(Calendar.YEAR, year)
                         calendar2.set(Calendar.MONTH, month)
                         calendar2.set(Calendar.DAY_OF_MONTH, day)
-                        calendar2.set(Calendar.HOUR_OF_DAY, hour + 12)
+                        calendar2.set(Calendar.HOUR_OF_DAY, hour)
                         calendar2.set(Calendar.MINUTE, minute)
                     }
                     calendar2.set(Calendar.SECOND, 0)
@@ -83,7 +83,6 @@ class AppointmentDialog : DialogFragment(R.layout.dialog_appointment) {
         timeHour = calendar2.timeInMillis
         viewBinding.addNoteBtn.setOnClickListener {
             Log.d("TTTT",(calendar2.timeInMillis-Calendar.getInstance().timeInMillis).toString())
-//            Log.d("TTTT",Calendar.getInstance().timeInMillis.toString())
             if (calendar2.timeInMillis - Calendar.getInstance().timeInMillis > 0) {
                 val data = Data.Builder()
                 data.putInt("id", 0)

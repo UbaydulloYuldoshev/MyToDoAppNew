@@ -2,23 +2,18 @@ package uz.gita.mytodoapp.ui.dialog
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.content.Context
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.viewModels
-import androidx.work.*
+import androidx.work.Data
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
+import androidx.work.WorkRequest
 import uz.gita.mytodoapp.R
 import uz.gita.mytodoapp.WorkManagerToDo
 import uz.gita.mytodoapp.app.App
@@ -61,7 +56,7 @@ class AddTaskDialog : DialogFragment(R.layout.dialog_add_task) {
 
         viewBinding.timeAlarm.setOnClickListener {
             DatePickerDialog(requireContext(), { _, year, month, day ->
-                cYear = "$year/${month+1}/$day"
+                cYear = "$year/${month + 1}/$day"
                 TimePickerDialog(requireContext(), { _, hour, minute ->
                     time = "$hour : $minute"
                     timeAlarm = "$hour : $minute"
@@ -69,7 +64,7 @@ class AddTaskDialog : DialogFragment(R.layout.dialog_add_task) {
                         calendar.set(Calendar.YEAR, year)
                         calendar.set(Calendar.MONTH, month)
                         calendar.set(Calendar.DAY_OF_MONTH, day)
-                        calendar.set(Calendar.HOUR_OF_DAY, hour + 12)
+                        calendar.set(Calendar.HOUR_OF_DAY, hour)
                         calendar.set(Calendar.MINUTE, minute)
                     }
                     calendar.set(Calendar.SECOND, 0)
@@ -83,44 +78,42 @@ class AddTaskDialog : DialogFragment(R.layout.dialog_add_task) {
                 date.get(Calendar.DAY_OF_MONTH)).show()
         }
         viewBinding.addNoteBtn.setOnClickListener {
-            if (viewBinding.addNoteTitle.editText?.text?.isNotEmpty() == true &&
-                viewBinding.addNoteDescription.editText?.text?.isNotEmpty() == true
-                && viewBinding.addNoteAlarmTime.editText?.text?.isNotEmpty() == true) {
-                listener?.invoke(TaskEntity(0,
-                    viewBinding.addNoteTitle.editText?.text.toString(),
-                    viewBinding.addNoteDescription.editText?.text.toString(),
-                    0,
-                    time,
-                    cYear),
-                    calendar.timeInMillis)
-//                createRequest(calendar.timeInMillis)
-                isCancelable = false
-                dismiss()
-            } else
-                Toast.makeText(App.instance, "Please enter fields !", Toast.LENGTH_SHORT).show()
-
+            if (calendar.timeInMillis - Calendar.getInstance().timeInMillis > 0) {
+                val data = Data.Builder()
+                data.putInt("id", 0)
+                data.putString("title", "${viewBinding.addNoteTitle.editText?.text}")
+                data.putString("description", "${viewBinding.addNoteDescription.editText?.text}")
+                val uploadWorkerRequest: WorkRequest =
+                    OneTimeWorkRequest.Builder(WorkManagerToDo::class.java)
+                        .setInitialDelay(calendar.timeInMillis - Calendar.getInstance().timeInMillis,
+                            TimeUnit.MILLISECONDS)
+                        .setInputData(data.build()).build()
+                WorkManager.getInstance(requireContext()).enqueue(uploadWorkerRequest)
+                if (viewBinding.addNoteTitle.editText?.text?.isNotEmpty() == true &&
+                    viewBinding.addNoteDescription.editText?.text?.isNotEmpty() == true
+                    && viewBinding.addNoteAlarmTime.editText?.text?.isNotEmpty() == true
+                ) {
+                    listener?.invoke(TaskEntity(0,
+                        viewBinding.addNoteTitle.editText?.text.toString(),
+                        viewBinding.addNoteDescription.editText?.text.toString(),
+                        0,
+                        time,
+                        cYear,
+                        uploadWorkerRequest.id.toString()),
+                        calendar.timeInMillis)
+                    isCancelable = false
+                    dismiss()
+                } else
+                    Toast.makeText(App.instance, "Please, enter fields !", Toast.LENGTH_SHORT).show()
+            }
+            Toast.makeText(App.instance,(calendar.timeInMillis-Calendar.getInstance().timeInMillis).toString(),Toast.LENGTH_SHORT).show()
         }
         viewBinding.cancelNoteBtn.setOnClickListener {
             isCancelable = false
             dismiss()
         }
     }
-//    private fun createRequest(time:Long){
-//        if( time>=0 ){
-//
-//            val data = Data.Builder()
-//            data.putInt("id",0)
-//            data.putString("title","${viewBinding.addNoteTitle.editText?.text}")
-//            data.putString("title","${viewBinding.addNoteDescription.editText?.text}")
-//
-//            val uploadWorkerRequest: WorkRequest =
-//                OneTimeWorkRequest.Builder(WorkManagerToDo::class.java)
-//                    .setInitialDelay(time, TimeUnit.MILLISECONDS)
-//                    .setInputData(data.build()).build()
-//            WorkManager.getInstance(requireContext()).enqueue(uploadWorkerRequest)
-//
-//        }
-//    }
+
     fun setDialogListener(f: (TaskEntity, Long) -> Unit) {
         listener = f
     }

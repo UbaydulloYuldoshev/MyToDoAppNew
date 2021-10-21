@@ -12,5 +12,6 @@ data class TaskEntity(
     val description : String,
     var pagePos : Int = 0,
     var timeAlarm : String,
-    var time: String
+    var time: String,
+    var idItem :String
 ): Serializable

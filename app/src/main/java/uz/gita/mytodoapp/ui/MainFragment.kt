@@ -123,7 +123,6 @@ class MainFragment : Fragment(R.layout.activity_main_nav) {
             addDialog.setDialogListener { entity, time ->
                 taskDao.insert(entity)
                 todoPage.loadData()
-                setNotification(entity, time)
                 adapter.notifyDataSetChanged()
             }
             addDialog.isCancelable = false

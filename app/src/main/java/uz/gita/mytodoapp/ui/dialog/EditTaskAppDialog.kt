@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,7 +27,7 @@ class EditTaskAppDialog : DialogFragment() {
     private val viewBinding get() = _viewBinding!!
     private lateinit var calendar: Calendar
     var currentNotify = 0L
-    private lateinit var data : AppointmentEntity
+    private lateinit var data: AppointmentEntity
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -72,13 +73,13 @@ class EditTaskAppDialog : DialogFragment() {
                         calendar.set(Calendar.YEAR, year)
                         calendar.set(Calendar.MONTH, month)
                         calendar.set(Calendar.DAY_OF_MONTH, day)
-                        calendar.set(Calendar.HOUR_OF_DAY, hour + 12)
+                        calendar.set(Calendar.HOUR_OF_DAY, hour)
                         calendar.set(Calendar.MINUTE, minute)
                     }
                     calendar.set(Calendar.SECOND, 0)
                     calendar.set(Calendar.MILLISECOND, 0)
 
-                    viewBinding.addNoteAlarmTime.editText?.setText("$cYear $timeAlarm")
+                    viewBinding.addNoteAlarmTime.editText?.setText("$cYear")
                     currentNotify = calendar.timeInMillis
                 }, date.get(Calendar.HOUR), date.get(Calendar.MINUTE), true).show()
             },
@@ -86,28 +87,33 @@ class EditTaskAppDialog : DialogFragment() {
                 date.get(Calendar.MONTH),
                 date.get(Calendar.DAY_OF_MONTH)).show()
         }
-          cancelRequest(data.idItem)
-            val data = Data.Builder()
-            data.putInt("id", 0)
-            data.putString("title", "${viewBinding.taskTitle.editText?.text}")
-            data.putString("description", "${viewBinding.taskDescription.editText?.text}")
-
-            val uploadWorkerRequest: WorkRequest =
-                OneTimeWorkRequest.Builder(WorkManagerToDo::class.java)
-                    .setInitialDelay((currentNotify - calendar.timeInMillis), TimeUnit.MILLISECONDS)
-                    .setInputData(data.build()).build()
-            WorkManager.getInstance(requireContext()).enqueue(uploadWorkerRequest)
 
         viewBinding.buttonAdd.setOnClickListener {
+            Log.d("AAAA", data.idItem)
+            if (calendar.timeInMillis > Calendar.getInstance().timeInMillis) {
+                cancelRequest(data.idItem)
+                val data = Data.Builder()
+                data.putInt("id", 0)
+                data.putString("title", "${viewBinding.taskTitle.editText?.text}")
+                data.putString("description", "${viewBinding.taskDescription.editText?.text}")
+
+                val uploadWorkerRequest: WorkRequest =
+                    OneTimeWorkRequest.Builder(WorkManagerToDo::class.java)
+                        .setInitialDelay((calendar.timeInMillis - Calendar.getInstance().timeInMillis),
+                            TimeUnit.MILLISECONDS)
+                        .setInputData(data.build()).build()
+                WorkManager.getInstance(requireContext()).enqueue(uploadWorkerRequest)
+
                 listener?.invoke(AppointmentEntity(
                     pos,
                     viewBinding.taskTitle.editText?.text.toString(),
                     viewBinding.taskDescription.editText?.text.toString(),
-                    viewBinding.taskSelectedTime.text.toString(),
-                    "",
+                    timeAlarm,
+                    viewBinding.addNoteAlarmTime.editText?.text.toString(),
                     uploadWorkerRequest.id.toString()
                 ))
                 dismiss()
+            }
         }
         viewBinding.buttonNo.setOnClickListener {
             dismiss()

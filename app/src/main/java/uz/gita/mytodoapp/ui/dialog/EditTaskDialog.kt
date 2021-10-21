@@ -1,5 +1,6 @@
 package uz.gita.mytodoapp.ui.dialog
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.os.Build
@@ -9,15 +10,23 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
+import androidx.work.Data
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
+import androidx.work.WorkRequest
+import uz.gita.mytodoapp.WorkManagerToDo
 import uz.gita.mytodoapp.data.entity.TaskEntity
 import uz.gita.mytodoapp.databinding.DialogEditTaskBinding
+import uz.gita.mytodoapp.utils.cancelRequest
 import java.util.*
+import java.util.concurrent.TimeUnit
 
-class EditTaskDialog constructor(var timeCons:Long) : DialogFragment() {
+class EditTaskDialog : DialogFragment() {
     private var listener: ((TaskEntity) -> Unit)? = null
     private var _viewBinding: DialogEditTaskBinding? = null
     private val viewBinding get() = _viewBinding!!
     private lateinit var calendar: Calendar
+    private lateinit var data: TaskEntity
     var currentNotify = 0L
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,6 +46,7 @@ class EditTaskDialog constructor(var timeCons:Long) : DialogFragment() {
 
     }
 
+    @SuppressLint("RestrictedApi")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         var pos = 0
         calendar = Calendar.getInstance()
@@ -46,7 +56,7 @@ class EditTaskDialog constructor(var timeCons:Long) : DialogFragment() {
 
         val date = Calendar.getInstance()
         arguments?.let {
-            val data = it.getSerializable("data") as TaskEntity
+            data = it.getSerializable("data") as TaskEntity
             pos = data.id
             viewBinding.taskTitle.editText?.setText(data.title)
             viewBinding.taskDescription.editText?.setText(data.description)
@@ -63,7 +73,7 @@ class EditTaskDialog constructor(var timeCons:Long) : DialogFragment() {
                         calendar.set(Calendar.YEAR, year)
                         calendar.set(Calendar.MONTH, month)
                         calendar.set(Calendar.DAY_OF_MONTH, day)
-                        calendar.set(Calendar.HOUR_OF_DAY, hour +12)
+                        calendar.set(Calendar.HOUR_OF_DAY, hour + 12)
                         calendar.set(Calendar.MINUTE, minute)
                     }
                     calendar.set(Calendar.SECOND, 0)
@@ -80,14 +90,28 @@ class EditTaskDialog constructor(var timeCons:Long) : DialogFragment() {
         }
 
         viewBinding.buttonAdd.setOnClickListener {
-            listener?.invoke(TaskEntity(pos,
-                viewBinding.taskTitle.editText?.text.toString(),
-                viewBinding.taskDescription.editText?.text.toString(),
-                0,
-                timeAlarm,
-                viewBinding.addNoteAlarmTime.editText?.text.toString()))
-            timeCons =calendar.timeInMillis
-            dismiss()
+
+            if (calendar.timeInMillis - Calendar.getInstance().timeInMillis > 0) {
+                val dataa = Data.Builder()
+                dataa.putInt("id", 0)
+                dataa.putString("title", "${viewBinding.taskTitle.editText?.text}")
+                dataa.putString("description", "${viewBinding.taskDescription.editText?.text}")
+                val uploadWorkerRequest: WorkRequest =
+                    OneTimeWorkRequest.Builder(WorkManagerToDo::class.java)
+                        .setInitialDelay(calendar.timeInMillis - Calendar.getInstance().timeInMillis,
+                            TimeUnit.MILLISECONDS)
+                        .setInputData(dataa.build()).build()
+                WorkManager.getInstance(requireContext()).enqueue(uploadWorkerRequest)
+                listener?.invoke(TaskEntity(pos,
+                    viewBinding.taskTitle.editText?.text.toString(),
+                    viewBinding.taskDescription.editText?.text.toString(),
+                    0,
+                    timeAlarm,
+                    viewBinding.addNoteAlarmTime.editText?.text.toString(),
+                    uploadWorkerRequest.stringId))
+                dismiss()
+                cancelRequest(data.idItem)
+            }
         }
         viewBinding.buttonNo.setOnClickListener {
             dismiss()
