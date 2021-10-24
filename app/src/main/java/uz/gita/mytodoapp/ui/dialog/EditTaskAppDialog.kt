@@ -73,7 +73,7 @@ class EditTaskAppDialog : DialogFragment() {
                         calendar.set(Calendar.YEAR, year)
                         calendar.set(Calendar.MONTH, month)
                         calendar.set(Calendar.DAY_OF_MONTH, day)
-                        calendar.set(Calendar.HOUR_OF_DAY, hour)
+                        calendar.set(Calendar.HOUR_OF_DAY, hour+12)
                         calendar.set(Calendar.MINUTE, minute)
                     }
                     calendar.set(Calendar.SECOND, 0)

@@ -59,7 +59,7 @@ class AppointmentDialog : DialogFragment(R.layout.dialog_appointment) {
         val date = Calendar.getInstance()
         viewBinding.timeAlarm.setOnClickListener {
             DatePickerDialog(requireContext(), { _, year, month, day ->
-                cYear = "$year/$month/$day"
+                cYear = "$year.${month+1}.$day"
                 TimePickerDialog(requireContext(), { _, hour, minute ->
                     time = "$hour : $minute"
                     timeAlarm = "$hour : $minute"
@@ -67,7 +67,7 @@ class AppointmentDialog : DialogFragment(R.layout.dialog_appointment) {
                         calendar2.set(Calendar.YEAR, year)
                         calendar2.set(Calendar.MONTH, month)
                         calendar2.set(Calendar.DAY_OF_MONTH, day)
-                        calendar2.set(Calendar.HOUR_OF_DAY, hour)
+                        calendar2.set(Calendar.HOUR_OF_DAY, hour+12)
                         calendar2.set(Calendar.MINUTE, minute)
                     }
                     calendar2.set(Calendar.SECOND, 0)
@@ -80,6 +80,7 @@ class AppointmentDialog : DialogFragment(R.layout.dialog_appointment) {
                 date.get(Calendar.MONTH),
                 date.get(Calendar.DAY_OF_MONTH)).show()
         }
+
         timeHour = calendar2.timeInMillis
         viewBinding.addNoteBtn.setOnClickListener {
             Log.d("TTTT",(calendar2.timeInMillis-Calendar.getInstance().timeInMillis).toString())
@@ -114,22 +115,6 @@ class AppointmentDialog : DialogFragment(R.layout.dialog_appointment) {
             isCancelable = false
             dismiss()
         }
-
-        /*  fun createRequest(time:Long){
-              if( time>=0 ){
-                  val data = Data.Builder()
-                  data.putInt("id",0)
-                  data.putString("title","${viewBinding.addNoteTitle.editText?.text}")
-                  data.putString("title","${viewBinding.addNoteDescription.editText?.text}")
-
-                  val uploadWorkerRequest: WorkRequest =
-                      OneTimeWorkRequest.Builder(WorkManagerToDo::class.java)
-                          .setInitialDelay(time, TimeUnit.MILLISECONDS)
-                          .setInputData(data.build()).build()
-                  WorkManager.getInstance(requireContext()).enqueue(uploadWorkerRequest)
-
-              }
-          }*/
     }
 
     fun setDialogListener(f: (AppointmentEntity, Long) -> Unit) {

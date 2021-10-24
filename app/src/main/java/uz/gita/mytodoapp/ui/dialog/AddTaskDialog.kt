@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -56,7 +57,7 @@ class AddTaskDialog : DialogFragment(R.layout.dialog_add_task) {
 
         viewBinding.timeAlarm.setOnClickListener {
             DatePickerDialog(requireContext(), { _, year, month, day ->
-                cYear = "$year/${month + 1}/$day"
+                cYear = "$year.${month + 1}.$day"
                 TimePickerDialog(requireContext(), { _, hour, minute ->
                     time = "$hour : $minute"
                     timeAlarm = "$hour : $minute"
@@ -64,13 +65,13 @@ class AddTaskDialog : DialogFragment(R.layout.dialog_add_task) {
                         calendar.set(Calendar.YEAR, year)
                         calendar.set(Calendar.MONTH, month)
                         calendar.set(Calendar.DAY_OF_MONTH, day)
-                        calendar.set(Calendar.HOUR_OF_DAY, hour)
+                        calendar.set(Calendar.HOUR_OF_DAY, hour+12)
                         calendar.set(Calendar.MINUTE, minute)
                     }
                     calendar.set(Calendar.SECOND, 0)
                     calendar.set(Calendar.MILLISECOND, 0)
 
-                    viewBinding.addNoteAlarmTime.editText?.setText("$cYear $timeAlarm")
+                    viewBinding.addNoteAlarmTime.editText?.setText("$cYear")
                 }, date.get(Calendar.HOUR), date.get(Calendar.MINUTE), true).show()
             },
                 date.get(Calendar.YEAR),
@@ -78,6 +79,7 @@ class AddTaskDialog : DialogFragment(R.layout.dialog_add_task) {
                 date.get(Calendar.DAY_OF_MONTH)).show()
         }
         viewBinding.addNoteBtn.setOnClickListener {
+            Log.d("SSSS",(calendar.timeInMillis - Calendar.getInstance().timeInMillis).toString())
             if (calendar.timeInMillis - Calendar.getInstance().timeInMillis > 0) {
                 val data = Data.Builder()
                 data.putInt("id", 0)
@@ -106,7 +108,6 @@ class AddTaskDialog : DialogFragment(R.layout.dialog_add_task) {
                 } else
                     Toast.makeText(App.instance, "Please, enter fields !", Toast.LENGTH_SHORT).show()
             }
-            Toast.makeText(App.instance,(calendar.timeInMillis-Calendar.getInstance().timeInMillis).toString(),Toast.LENGTH_SHORT).show()
         }
         viewBinding.cancelNoteBtn.setOnClickListener {
             isCancelable = false

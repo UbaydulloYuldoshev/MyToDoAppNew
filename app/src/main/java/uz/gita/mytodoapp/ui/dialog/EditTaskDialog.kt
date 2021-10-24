@@ -15,6 +15,7 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import androidx.work.WorkRequest
 import uz.gita.mytodoapp.WorkManagerToDo
+import uz.gita.mytodoapp.app.App
 import uz.gita.mytodoapp.data.entity.TaskEntity
 import uz.gita.mytodoapp.databinding.DialogEditTaskBinding
 import uz.gita.mytodoapp.utils.cancelRequest
@@ -60,7 +61,7 @@ class EditTaskDialog : DialogFragment() {
             pos = data.id
             viewBinding.taskTitle.editText?.setText(data.title)
             viewBinding.taskDescription.editText?.setText(data.description)
-            viewBinding.addNoteAlarmTime.editText?.setText(data.timeAlarm)
+            viewBinding.addNoteAlarmTime.editText?.setText("${data.time}")
         }
 
         viewBinding.taskSelectedTime.setOnClickListener {
@@ -90,17 +91,17 @@ class EditTaskDialog : DialogFragment() {
         }
 
         viewBinding.buttonAdd.setOnClickListener {
-
             if (calendar.timeInMillis - Calendar.getInstance().timeInMillis > 0) {
-                val dataa = Data.Builder()
-                dataa.putInt("id", 0)
-                dataa.putString("title", "${viewBinding.taskTitle.editText?.text}")
-                dataa.putString("description", "${viewBinding.taskDescription.editText?.text}")
+                cancelRequest(data.idItem)
+                val data = Data.Builder()
+                data.putInt("id", 0)
+                data.putString("title", "${viewBinding.taskTitle.editText?.text}")
+                data.putString("description", "${viewBinding.taskDescription.editText?.text}")
                 val uploadWorkerRequest: WorkRequest =
                     OneTimeWorkRequest.Builder(WorkManagerToDo::class.java)
                         .setInitialDelay(calendar.timeInMillis - Calendar.getInstance().timeInMillis,
                             TimeUnit.MILLISECONDS)
-                        .setInputData(dataa.build()).build()
+                        .setInputData(data.build()).build()
                 WorkManager.getInstance(requireContext()).enqueue(uploadWorkerRequest)
                 listener?.invoke(TaskEntity(pos,
                     viewBinding.taskTitle.editText?.text.toString(),
@@ -110,14 +111,16 @@ class EditTaskDialog : DialogFragment() {
                     viewBinding.addNoteAlarmTime.editText?.text.toString(),
                     uploadWorkerRequest.stringId))
                 dismiss()
-                cancelRequest(data.idItem)
             }
         }
         viewBinding.buttonNo.setOnClickListener {
             dismiss()
         }
     }
-
+    private fun cancelRequest(id: String) {
+        WorkManager.getInstance(App.instance)
+            .cancelWorkById(UUID.fromString(id))
+    }
     fun setListener(f: (TaskEntity) -> Unit) {
         listener = f
     }
