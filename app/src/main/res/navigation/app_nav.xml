@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/splashFragment"
-        android:name="uz.gita.mytodoapp.ui.page.SplashFragment"
+        android:name="uz.gita.mytodoappwithdagger.ui.page.SplashFragment"
         android:label="fragment_splash"
         tools:layout="@layout/fragment_splash" >
         <action
@@ -22,7 +22,7 @@
     </fragment>
     <fragment
         android:id="@+id/mainFragment"
-        android:name="uz.gita.mytodoapp.ui.MainFragment"
+        android:name="uz.gita.mytodoappwithdagger.ui.MainFragment"
         android:label="fragment_main"
         tools:layout="@layout/fragment_main" >
 
@@ -42,16 +42,16 @@
 
     <fragment
         android:id="@+id/infoPage"
-        android:name="uz.gita.mytodoapp.ui.page.InfoFragment"
+        android:name="uz.gita.mytodoappwithdagger.ui.page.InfoFragment"
         android:label="fragment_info"
         tools:layout="@layout/fragment_info" />
     <fragment
         android:id="@+id/addCheckListScreen"
-        android:name="uz.gita.mytodoapp.AddCheckListScreen"
+        android:name="uz.gita.mytodoappwithdagger.AddCheckListScreen"
         android:label="AddCheckListScreen" />
     <fragment
         android:id="@+id/appointmentFragment"
-        android:name="uz.gita.mytodoapp.ui.page.AppointmentFragment"
+        android:name="uz.gita.mytodoappwithdagger.ui.page.AppointmentFragment"
         android:label="AppointmentFragment" >
         <action
             android:id="@+id/action_appointmentFragment_to_infoappFragment"
@@ -59,10 +59,10 @@
     </fragment>
     <fragment
         android:id="@+id/infoappFragment"
-        android:name="uz.gita.mytodoapp.ui.page.InfoappFragment"
+        android:name="uz.gita.mytodoappwithdagger.ui.page.InfoappFragment"
         android:label="InfoappFragment" />
     <fragment
         android:id="@+id/contactFragment"
-        android:name="uz.gita.mytodoapp.ui.page.ContactFragment"
+        android:name="uz.gita.mytodoappwithdagger.ui.page.ContactFragment"
         android:label="ContactFragment" />
 </navigation>
